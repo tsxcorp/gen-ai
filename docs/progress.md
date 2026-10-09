@@ -103,3 +103,8 @@
 - Done: secret scan cuối đối chiếu 18 giá trị credential thật với 179 staged blobs, không có match; fixture `OAI_KEY` là dữ liệu test. Commit import/deployment `12e20d6` đã push lên GitHub main và xác nhận SHA remote trùng local, giữ lịch sử ban đầu, không force-push. Browser smoke production hiển thị modal access-token khi chưa đăng nhập, HTTP 401 đúng kỳ vọng (bằng chứng parent cung cấp).
 - Next: đồng bộ GitHub đã hoàn tất; quản trị lấy access token runtime qua SSH rồi cấu hình provider qua UI. Live generation chưa kiểm, không gọi API trả phí; policy retention sau crash/container PID reuse cần làm trước vận hành dài hạn.
 - Decisions: frontend dùng API cùng origin để giữ cookie/SSE; domain API riêng map cùng backend. Bắt buộc token ngẫu nhiên runtime, không demo, một replica, non-root và data/output volumes riêng; không đổi app khác hoặc gọi generation trả phí.
+
+## 2026-10-09 — QA độc lập migration cấu hình Dokploy
+- Done: đối chiếu yêu cầu token/LAN từ `docs/requirements.md`; Docker Compose v2.40.3-desktop.1 kiểm `compose.dokploy.yml` với `--env-file /dev/null` và `AIGEN_TOKEN=qa-dummy-not-a-secret`: `config --quiet` exit 0. Token thiếu hoặc rỗng đều exit 1 với lỗi required variable. Kiểm JSON đã resolve: đúng hai volume external `genai_genai-data`, `genai_genai-output`, mount data/tmp đúng, không service nào publish host port; LAN bật và network Dokploy external. Assertions exit 0.
+- Next: kiểm volume/network thực tồn tại và routing khi triển khai; lượt này chỉ kiểm cấu hình, không build/start container.
+- Decisions: không thêm/sửa test, không chạy framework hay generation/API trả phí; dùng token giả, không đọc dotenv project. Giữ nguyên chỉnh sửa của người khác trong spec và Compose; coverage không áp dụng cho cấu hình thuần.

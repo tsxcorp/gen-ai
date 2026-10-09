@@ -1,6 +1,9 @@
 # Architecture / Spec (nguồn sự thật)
 
 ## Deployment server B (2026-10-09)
+- Deployment chính thức được Dokploy quản lý trong project `AI Gen Studio`, environment production và một Compose service build frontend/backend từ `tsxcorp/gen-ai` branch main qua GitHub App đã cấp quyền. Source compose là `compose.dokploy.yml`; domain được lưu thành record trong Dokploy và routing do Dokploy sinh, không chỉ là container ngoài UI.
+- Chuyển từ Compose trực tiếp sang Dokploy phải giữ token hiện tại và dùng external volumes `genai_genai-data`, `genai_genai-output`; không xóa/recreate volume. Kiểm job active trước cutover; dừng container cũ rồi khởi động managed service, rollback bằng container cũ khi có lỗi. Không chạy hai backend đồng thời với cùng output volume.
+- Dokploy lưu token trong Environment riêng, Compose bắt buộc token khác rỗng bằng interpolation; không commit env. Giữ randomize/isolated deployment volume tắt để tránh nhân bản hoặc đổi volume. Domain frontend/backend cùng service `app:8000`; deploy bằng UI/API có kiểm soát, không tự bật auto-deploy khi còn job active.
 - Chạy một replica FastAPI sau Traefik HTTPS trên server B; build frontend vào image bằng lockfile. `gen-ai.nexpo.vn` phục vụ frontend và proxy API cùng origin; `api-genai.nexpo.vn` phục vụ backend qua cùng container, không thêm CORS hoặc gửi provider key xuống browser.
 - Bắt buộc LAN access token ngẫu nhiên, chỉ lưu ở file runtime ngoài Git; không dùng demo trên production. Không đưa `data/providers.json`, key local hoặc output vào image/repo; cấu hình provider mới qua UI sau deployment.
 - Khi token được cấp qua `AIGEN_TOKEN`, startup chỉ thông báo đã cấu hình, không in token vào container log. Chế độ LAN local tự sinh token vẫn hiển thị một lần để người dùng kết nối.
