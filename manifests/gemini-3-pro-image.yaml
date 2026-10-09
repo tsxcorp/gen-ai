@@ -1,0 +1,141 @@
+# Generated seed; source of truth is this file. lastVerified = date params were last checked against docs/research
+# (NOT a live API call). verifiedLive: false = no real call has confirmed the payload shape; fields marked [?] are unverified.
+id: gemini-3-pro-image
+label: Gemini 3 Pro Image (NB Pro)
+provider: vertex
+kind: image
+adapter: vertex_image
+apiModel: gemini-3-pro-image
+apiLocation: global
+status: ga
+lastVerified: '2026-10-07'
+verified: false
+verifiedLive: false
+sources:
+- plans/reports/research-image-params.md#2a
+- docs/requirements.md (Bang dieu khien V1 - Anh)
+modes:
+- t2i
+- edit
+params:
+- key: prompt
+  label: Prompt
+  type: text
+  group: prompt
+  level: basic
+  providerPath: prompt
+  description: Prompt text. Also accepted as top-level `prompt` of the request.
+- key: aspect_ratio
+  label: Aspect ratio
+  type: enum
+  values:
+  - '1:1'
+  - '2:3'
+  - '3:2'
+  - '3:4'
+  - '4:3'
+  - '4:5'
+  - '5:4'
+  - '9:16'
+  - '16:9'
+  - '21:9'
+  default: '1:1'
+  group: size
+  level: basic
+  providerPath: generationConfig.imageConfig.aspectRatio
+- key: image_size
+  label: Image size
+  type: enum
+  values:
+  - 1K
+  - 2K
+  - 4K
+  default: 1K
+  group: size
+  level: basic
+  providerPath: generationConfig.imageConfig.imageSize
+  description: Upper-case K is mandatory; lower-case is rejected by the API.
+- key: reference_images
+  label: Reference images
+  type: imageList
+  group: reference
+  level: advanced
+  appliesToModes:
+  - edit
+  required: true
+  maxItems: 14
+  description: Up to 14 in total (per-role limits object/character are NOT enforced in V1).
+- key: google_search
+  label: Google Search grounding
+  type: bool
+  default: false
+  group: style
+  level: advanced
+  providerPath: tools
+  supported: true
+- key: thinking_level
+  label: Thinking level
+  type: enum
+  values:
+  - low
+  - high
+  group: style
+  level: advanced
+  providerPath: generationConfig.thinkingConfig.thinkingLevel
+  supported: true
+  description: '[?] path and enum values are not in the research (it only says thinking_level, e.g. high); unverified until a live call.'
+- key: seed
+  label: Seed
+  type: int
+  range:
+    min: 0
+    max: 2147483647
+  group: output
+  level: advanced
+  providerPath: generationConfig.seed
+  description: '[?] Field exists; reproducibility for images is undocumented.'
+- key: mime_type
+  label: Output format
+  type: enum
+  values:
+  - image/png
+  - image/jpeg
+  group: output
+  level: advanced
+  providerPath: generationConfig.imageConfig.imageOutputOptions.mimeType
+  description: '[?] path from secondary source.'
+- key: safety_threshold
+  label: Safety threshold
+  type: enum
+  values:
+  - BLOCK_NONE
+  - BLOCK_ONLY_HIGH
+  - BLOCK_MEDIUM_AND_ABOVE
+  - BLOCK_LOW_AND_ABOVE
+  group: safety
+  level: advanced
+  providerPath: safetySettings
+  description: Applied to the 4 standard harm categories.
+constraints: []
+pricing:
+  unit: per_image
+  table:
+  - when:
+      image_size:
+      - 1K
+      - 2K
+    usd: 0.134
+  - when:
+      image_size: 4K
+    usd: 0.24
+limits:
+  maxConcurrent: 4
+  maxVariantsNative: 1
+enhancer:
+  systemPrompt: 'You are a prompt editor for an image generation model. Rewrite the user''s prompt to be vivid and
+    concrete: subject, setting, composition, lighting, style, lens/medium, and any text that must appear in the
+    image. Keep the user''s intent and language. Do not add people, brands or characters the user did not mention.
+    Do not use negative phrasing; describe what should be present. Return only the rewritten prompt, no preface.'
+sunsetDate: '2027-05-28'
+notes: Reference limit 14 total (<=6 object + <=5 character, per-role not enforced). API id is often seen with -preview
+  suffix [?].

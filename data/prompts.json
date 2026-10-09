@@ -1,0 +1,31 @@
+{
+  "items": [
+    {
+      "id": "p-product",
+      "name": "Product on seamless backdrop",
+      "text": "A matte ceramic mug on a seamless pastel backdrop, soft diffused studio light, subtle shadow, 85mm lens, shallow depth of field",
+      "tags": [
+        "image",
+        "product"
+      ]
+    },
+    {
+      "id": "p-cinematic-city",
+      "name": "Cinematic city dusk",
+      "text": "Single continuous shot, slow dolly forward along a rain-soaked neon street at dusk, reflections on asphalt, ambient city sound and distant thunder",
+      "tags": [
+        "video",
+        "cinematic"
+      ]
+    },
+    {
+      "id": "p-poster-vi",
+      "name": "Poster text (vi)",
+      "text": "Poster tối giản với dòng chữ lớn \"XIN CHÀO\" ở giữa, nền xanh pastel, bố cục cân đối",
+      "tags": [
+        "image",
+        "text"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+# Source of truth for this model. lastVerified = date params were last checked against docs/research
+# (NOT a live API call). verifiedLive: false = no real call has confirmed the payload shape; fields marked [?] are unverified.
+id: seedance-2.5
+label: Seedance 2.5
+provider: byteplus
+kind: video
+adapter: byteplus_seedance
+apiModel: dreamina-seedance-2-5-260628
+status: ga
+lastVerified: '2026-10-07'
+verified: false
+verifiedLive: false
+sources:
+- plans/reports/research-video-params.md#2.2
+- plans/reports/research-video-params.md#3
+- plans/reports/research-video-params.md#4
+- docs/requirements.md (Cap nhat pham vi D6b)
+notes: 'Newest Seedance. 1080p is 10-bit H.265 (many players cannot play it). No seed and no negative prompt (not in this
+  manifest on purpose). Result URL lives 24 h: downloaded immediately. Personal accounts: 3 concurrent tasks across ALL Seedance
+  models (shared limiter group). BytePlus activation needs balance > 30 USD or a plan [P]. Price per second is an approximation
+  of token billing (5 s, 16:9, no video input); ratio/image input shift it a little.'
+modes:
+- t2v
+- i2v
+- first_last
+params:
+- key: prompt
+  label: Prompt
+  type: text
+  group: prompt
+  level: basic
+  providerPath: prompt
+  description: Prompt text. Also accepted as top-level `prompt` of the request.
+- key: resolution
+  label: Resolution
+  type: enum
+  values:
+  - 480p
+  - 720p
+  - 1080p
+  default: 720p
+  group: size
+  level: basic
+  providerPath: resolution
+- key: ratio
+  label: Aspect ratio
+  type: enum
+  values:
+  - '16:9'
+  - '4:3'
+  - '1:1'
+  - '3:4'
+  - '9:16'
+  - '21:9'
+  - adaptive
+  default: '16:9'
+  group: size
+  level: basic
+  providerPath: ratio
+  description: Forced to `adaptive` when a first/last frame is given.
+- key: duration
+  label: Duration (s)
+  type: int
+  range:
+    min: 4
+    max: 30
+  default: 5
+  group: size
+  level: basic
+  providerPath: duration
+  description: '4-30 s. `-1` (auto) is not offered: the price could not be estimated.'
+- key: generate_audio
+  label: Generate audio
+  type: bool
+  default: true
+  group: audio
+  level: basic
+  providerPath: generate_audio
+  description: Mono audio. [?] Price does not depend on it in the research.
+- key: watermark
+  label: Watermark
+  type: bool
+  default: false
+  group: output
+  level: advanced
+  providerPath: watermark
+  description: Adds the provider's 'AI Generated' mark. Never removed after the fact.
+- key: first_frame
+  label: First frame
+  type: image
+  group: reference
+  level: basic
+  appliesToModes:
+  - i2v
+  - first_last
+  required: true
+  description: jpeg/png/webp/bmp/tiff/gif, 300-6000 px per side, aspect 0.4-2.5, <30 MB. Real-person faces are rejected by
+    the provider.
+- key: last_frame
+  label: Last frame
+  type: image
+  group: reference
+  level: basic
+  appliesToModes:
+  - first_last
+  required: true
+  description: Needs the first frame.
+constraints:
+- when:
+    mode:
+    - i2v
+    - first_last
+  then:
+    ratio: adaptive
+  reason: Seedance forces ratio=adaptive when a first/last frame is given
+pricing:
+  unit: per_second
+  table:
+  - when:
+      resolution: 480p
+    usd: 0.103
+  - when:
+      resolution: 720p
+    usd: 0.231
+  - when:
+      resolution: 1080p
+    usd: 0.569
+limits:
+  maxConcurrent: 3
+  maxVariantsNative: 1
+  concurrencyGroup: byteplus
+enhancer:
+  systemPrompt: 'You are a prompt editor for the Seedance text/image-to-video model. Rewrite the user''s prompt as one cohesive
+    shot description: subject, action over time, setting, camera movement and framing, lighting, style. Add audio cues (ambient
+    sound, music, short dialogue in quotes) when they fit. Keep the user''s intent and language. Return only the rewritten
+    prompt, no preface.'

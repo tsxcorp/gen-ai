@@ -1,0 +1,41 @@
+services:
+  app:
+    image: gen-ai:${GENAI_RELEASE:-latest}
+    build: .
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 2g
+    cpus: 2
+    pids_limit: 256
+    env_file: .env.production
+    environment:
+      AIGEN_LAN: "1"
+      AIGEN_ALLOWED_HOSTS: gen-ai.nexpo.vn,api-genai.nexpo.vn
+    volumes:
+      - genai-data:/var/lib/aigen/data
+      - genai-output:/var/lib/aigen/tmp
+    networks:
+      - dokploy-network
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: dokploy-network
+      traefik.http.services.genai.loadbalancer.server.port: "8000"
+      traefik.http.routers.genai.rule: Host(`gen-ai.nexpo.vn`) || Host(`api-genai.nexpo.vn`)
+      traefik.http.routers.genai.entrypoints: websecure
+      traefik.http.routers.genai.tls.certresolver: letsencrypt
+      traefik.http.routers.genai.service: genai
+      traefik.http.routers.genai-http.rule: Host(`gen-ai.nexpo.vn`) || Host(`api-genai.nexpo.vn`)
+      traefik.http.routers.genai-http.entrypoints: web
+      traefik.http.routers.genai-http.middlewares: genai-https
+      traefik.http.routers.genai-http.service: genai
+      traefik.http.middlewares.genai-https.redirectscheme.scheme: https
+      traefik.http.middlewares.genai-https.redirectscheme.permanent: "true"
+networks:
+  dokploy-network:
+    external: true
+volumes:
+  genai-data:
+  genai-output:

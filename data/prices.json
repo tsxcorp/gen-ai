@@ -1,0 +1,106 @@
+{
+  "entries": {
+    "nano-banana-2.1": {
+      "currency": "USD",
+      "lastVerified": "2026-10-07",
+      "source": "Google pricing page via research-image-params.md 2a [V]"
+    },
+    "gemini-3.1-flash-image": {
+      "currency": "USD",
+      "lastVerified": "2026-10-07",
+      "source": "research-image-params.md 2a [P] third-party"
+    },
+    "gemini-3.1-flash-lite-image": {
+      "currency": "USD",
+      "lastVerified": "2026-10-07",
+      "source": "price not found in research (cheapest tier); fill from console billing",
+      "unknown": true
+    },
+    "gemini-3-pro-image": {
+      "currency": "USD",
+      "lastVerified": "2026-10-07",
+      "source": "research-image-params.md 2a [V]"
+    },
+    "gemini-omni-1.1-flash": {
+      "currency": "USD",
+      "lastVerified": "2026-10-07",
+      "source": "Vertex pricing page via research-video-params.md section 4: $17.50/1M video output tokens x 1931/5792/8688/17376 tok/s [V]",
+      "variance": {
+        "min": 1.0,
+        "max": 1.1,
+        "note": "margin for audio/text tokens [?]"
+      }
+    },
+    "veo-3.1": {
+      "currency": "USD",
+      "lastVerified": "2026-10-07",
+      "source": "Vertex/Gemini pricing pages via research-video-params.md section 4 [V]"
+    },
+    "veo-3.1-fast": {
+      "currency": "USD",
+      "lastVerified": "2026-10-07",
+      "source": "research-video-params.md section 4 [V]"
+    },
+    "veo-3.1-lite": {
+      "currency": "USD",
+      "lastVerified": "2026-10-07",
+      "source": "research-video-params.md section 4 [V]"
+    },
+    "gpt-image-2.5-sunburst": {
+      "currency": "USD",
+      "lastVerified": "2026-10-07",
+      "source": "approximation: gpt-image-2 1024x1024 low/medium/high (research-image-params.md 2b [V]) scaled by pixel area; 2.5 table not readable; xhigh/max/auto and other sizes unknown",
+      "variance": {
+        "min": 0.8,
+        "max": 1.5,
+        "note": "2.5 prices not verified [?]"
+      }
+    },
+    "gpt-image-2.5-flare": {
+      "currency": "USD",
+      "lastVerified": "2026-10-07",
+      "source": "price not found in research (fast tier); fill from OpenAI pricing page",
+      "unknown": true
+    },
+    "seedance-2.5": {
+      "currency": "USD",
+      "lastVerified": "2026-10-07",
+      "source": "BytePlus ModelArk pricing via research-video-params.md section 4 [V]: $10.70/M tokens (480p/720p), $11.70/M (1080p), 5s 16:9 no video input",
+      "variance": {
+        "min": 1.0,
+        "max": 1.15,
+        "note": "token billing: ratio and image input shift the per-second price [?]"
+      }
+    },
+    "seedance-2.0": {
+      "currency": "USD",
+      "lastVerified": "2026-10-07",
+      "source": "research-video-params.md section 4 [V]: $0.07/0.15/0.37/0.78 per s (480p/720p/1080p/4k)",
+      "variance": {
+        "min": 1.0,
+        "max": 1.15,
+        "note": "token billing: ratio and image input shift the per-second price [?]"
+      }
+    },
+    "seedance-2.0-fast": {
+      "currency": "USD",
+      "lastVerified": "2026-10-07",
+      "source": "research-video-params.md section 4 [V]: list $0.06/0.12 per s; promo ended 2026-10-07",
+      "variance": {
+        "min": 1.0,
+        "max": 1.15,
+        "note": "token billing: ratio and image input shift the per-second price [?]"
+      }
+    },
+    "seedance-2.0-mini": {
+      "currency": "USD",
+      "lastVerified": "2026-10-07",
+      "source": "research-video-params.md section 4 [V]: list $0.04/0.08 per s; promo ended 2026-10-07",
+      "variance": {
+        "min": 1.0,
+        "max": 1.15,
+        "note": "token billing: ratio and image input shift the per-second price [?]"
+      }
+    }
+  }
+}

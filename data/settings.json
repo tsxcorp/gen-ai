@@ -1,0 +1,11 @@
+{
+  "confirmThresholdUsd": 5,
+  "maxJobsPerBatch": 24,
+  "staleDays": 30,
+  "maxAttempts": 4,
+  "retryBaseSeconds": 2.0,
+  "retryMaxSeconds": 60.0,
+  "pollIntervalSeconds": 10.0,
+  "jobTimeoutSeconds": 900,
+  "enhancerModel": "gemini-3.1-flash-lite"
+}

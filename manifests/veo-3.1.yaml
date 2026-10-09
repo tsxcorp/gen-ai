@@ -1,0 +1,179 @@
+# Generated seed; source of truth is this file. lastVerified = date params were last checked against docs/research
+# (NOT a live API call). verifiedLive: false = no real call has confirmed the payload shape; fields marked [?] are unverified.
+id: veo-3.1
+label: Veo 3.1
+provider: vertex
+kind: video
+adapter: vertex_veo
+apiModel: veo-3.1-generate-001
+status: ga
+lastVerified: '2026-10-07'
+verified: false
+verifiedLive: false
+sources:
+- plans/reports/research-video-params.md#2.1
+- docs/requirements.md (Bang dieu khien V1 - Video)
+notes: GA retirement 'November 17, 2026 or later'. predictLongRunning; sampleCount 1-4 is native (billed per video).
+  Quota ~50 req/min [?].
+modes:
+- t2v
+- i2v
+- first_last
+params:
+- key: prompt
+  label: Prompt
+  type: text
+  group: prompt
+  level: basic
+  providerPath: prompt
+  description: Prompt text. Also accepted as top-level `prompt` of the request.
+- key: aspect_ratio
+  label: Aspect ratio
+  type: enum
+  values:
+  - '16:9'
+  - '9:16'
+  default: '16:9'
+  group: size
+  level: basic
+  providerPath: parameters.aspectRatio
+- key: resolution
+  label: Resolution
+  type: enum
+  values:
+  - 720p
+  - 1080p
+  - 4k
+  default: 720p
+  group: size
+  level: basic
+  providerPath: parameters.resolution
+- key: duration
+  label: Duration (s)
+  type: enum
+  values:
+  - 4
+  - 6
+  - 8
+  default: 8
+  group: size
+  level: basic
+  providerPath: parameters.durationSeconds
+  description: Sent as an integer [?]. Forced to 8 for 1080p and 4k.
+- key: first_frame
+  label: First frame
+  type: image
+  group: reference
+  level: basic
+  appliesToModes:
+  - i2v
+  - first_last
+  required: true
+- key: last_frame
+  label: Last frame
+  type: image
+  group: reference
+  level: basic
+  appliesToModes:
+  - first_last
+  required: true
+  description: lastFrame requires image (first frame).
+- key: generate_audio
+  label: Generate audio
+  type: bool
+  default: true
+  group: audio
+  level: basic
+  providerPath: parameters.generateAudio
+  description: '[?] bool on Vertex REST per a secondary source; price depends on it.'
+- key: negative_prompt
+  label: Negative prompt
+  type: text
+  group: style
+  level: advanced
+  providerPath: parameters.negativePrompt
+- key: seed
+  label: Seed
+  type: int
+  range:
+    min: 0
+    max: 4294967295
+  group: output
+  level: advanced
+  providerPath: parameters.seed
+  description: uint32; does not guarantee reproducibility.
+- key: person_generation
+  label: Person generation
+  type: enum
+  values:
+  - allow_adult
+  - disallow
+  default: allow_adult
+  group: safety
+  level: advanced
+  providerPath: parameters.personGeneration
+  description: EU/UK/CH/MENA regions only accept allow_adult.
+- key: compression_quality
+  label: Compression quality
+  type: enum
+  values:
+  - optimized
+  - lossless
+  group: output
+  level: advanced
+  providerPath: parameters.compressionQuality
+  description: '[?] secondary source.'
+- key: resize_mode
+  label: Resize mode (image input)
+  type: enum
+  values:
+  - crop
+  - pad
+  group: reference
+  level: advanced
+  appliesToModes:
+  - i2v
+  - first_last
+  providerPath: parameters.resizeMode
+  description: '[?] secondary source (Veo 3 docs).'
+constraints:
+- when:
+    resolution:
+    - 1080p
+    - 4k
+  then:
+    duration: 8
+  reason: Veo requires duration 8s for 1080p and 4k output
+pricing:
+  unit: per_second
+  table:
+  - when:
+      generate_audio: true
+      resolution:
+      - 720p
+      - 1080p
+    usd: 0.4
+  - when:
+      generate_audio: true
+      resolution: 4k
+    usd: 0.6
+  - when:
+      generate_audio: false
+      resolution:
+      - 720p
+      - 1080p
+    usd: 0.2
+  - when:
+      generate_audio: false
+      resolution: 4k
+    usd: 0.4
+limits:
+  maxConcurrent: 4
+  maxVariantsNative: 4
+  rpm: 50
+enhancer:
+  systemPrompt: 'You are a prompt editor for the Veo text-to-video model. Rewrite the user''s prompt as one cohesive
+    shot description: subject, action over time, setting, camera movement and framing, lighting, style. Add audio
+    cues (ambient sound, music, short dialogue in quotes) when they fit. Keep the user''s intent and language. Return
+    only the rewritten prompt, no preface.'
+sunsetDate: '2026-11-17'

@@ -1,0 +1,40 @@
+[project]
+name = "ai-gen-studio-backend"
+version = "0.1.0"
+description = "AI Gen Studio backend (FastAPI, Vertex-first)"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "pydantic>=2.7",
+  "httpx>=0.27",
+  "google-auth>=2.30",
+  "PyYAML>=6.0",
+  "python-multipart>=0.0.9",
+  "requests>=2.34.2",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8",
+  "pytest-asyncio>=0.23",
+  "hypothesis>=6",
+  "ruff>=0.5",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 120
+extend-exclude = ["tests/verify"]
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "W"]
+ignore = ["B008", "E501"]
+
+[tool.uv]
+package = false

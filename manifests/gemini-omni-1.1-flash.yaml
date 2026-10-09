@@ -1,0 +1,130 @@
+# Generated seed; source of truth is this file. lastVerified = date params were last checked against docs/research
+# (NOT a live API call). verifiedLive: false = no real call has confirmed the payload shape; fields marked [?] are unverified.
+id: gemini-omni-1.1-flash
+label: Gemini Omni 1.1 Flash
+provider: vertex
+kind: video
+adapter: vertex_omni
+apiModel: gemini-omni-1.1-flash-preview
+apiLocation: global
+status: preview
+lastVerified: '2026-10-07'
+verified: false
+verifiedLive: false
+sources:
+- plans/reports/research-video-params.md#2.1
+- docs/requirements.md (Bang dieu khien V1 - Video)
+notes: 'Interactions API, Preview on Vertex. Audio always on (steer by prompt). No camera params: write ''single
+  continuous shot'' in the prompt or the model may cut. Endpoint/response shape unverified [?]; GCS bucket requirement
+  is Open #1.'
+modes:
+- t2v
+- i2v
+- first_last
+params:
+- key: prompt
+  label: Prompt
+  type: text
+  group: prompt
+  level: basic
+  providerPath: prompt
+  description: Prompt text. Also accepted as top-level `prompt` of the request.
+- key: model_variant
+  label: Model variant
+  type: enum
+  values:
+  - gemini-omni-1.1-flash-preview
+  - gemini-omni-flash-preview
+  default: gemini-omni-1.1-flash-preview
+  group: style
+  level: advanced
+  providerPath: model
+  description: The older -preview variant only supports 720p.
+- key: aspect_ratio
+  label: Aspect ratio
+  type: enum
+  values:
+  - '16:9'
+  - '9:16'
+  default: '16:9'
+  group: size
+  level: basic
+  providerPath: response_format.aspect_ratio
+- key: resolution
+  label: Resolution
+  type: enum
+  values:
+  - 360p
+  - 720p
+  - 1080p
+  - 4k
+  default: 720p
+  group: size
+  level: basic
+  providerPath: response_format.resolution
+  description: 1080p and 4k are upscaled.
+- key: duration
+  label: Duration (s)
+  type: enum
+  values:
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  default: 5
+  group: size
+  level: basic
+  providerPath: response_format.duration
+  providerFormat: '{}s'
+  description: '[?] Vertex lists 3s..10s; Gemini API docs list none. Default 5 is a guess.'
+- key: first_frame
+  label: First frame
+  type: image
+  group: reference
+  level: basic
+  appliesToModes:
+  - i2v
+  - first_last
+  required: true
+- key: last_frame
+  label: Last frame
+  type: image
+  group: reference
+  level: basic
+  appliesToModes:
+  - first_last
+  required: true
+constraints:
+- when:
+    model_variant: gemini-omni-flash-preview
+  then:
+    resolution: 720p
+  reason: gemini-omni-flash-preview only supports 720p
+pricing:
+  unit: per_second
+  table:
+  - when:
+      resolution: 360p
+    usd: 0.034
+  - when:
+      resolution: 720p
+    usd: 0.1
+  - when:
+      resolution: 1080p
+    usd: 0.152
+  - when:
+      resolution: 4k
+    usd: 0.304
+limits:
+  maxConcurrent: 2
+  maxVariantsNative: 1
+enhancer:
+  systemPrompt: You are a prompt editor for Gemini Omni video generation. Rewrite the user's prompt in natural language,
+    starting with the words 'Single continuous shot' unless the user asks for several cuts. Describe subject, action,
+    setting, camera movement (the model has no camera parameters, so camera control must be in the prompt), lighting,
+    style and sound (audio is always generated). Keep the user's intent and language. Return only the rewritten
+    prompt, no preface.

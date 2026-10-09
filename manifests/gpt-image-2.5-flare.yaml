@@ -1,0 +1,143 @@
+# Source of truth for this model. lastVerified = date params were last checked against docs/research
+# (NOT a live API call). verifiedLive: false = no real call has confirmed the payload shape; fields marked [?] are unverified.
+id: gpt-image-2.5-flare
+label: GPT Image 2.5 Flare
+provider: openai
+kind: image
+adapter: openai_image
+apiModel: gpt-image-2.5-flare
+status: ga
+lastVerified: '2026-10-07'
+verified: false
+verifiedLive: false
+sources:
+- plans/reports/research-image-params.md#2b
+- docs/requirements.md (Cap nhat pham vi D6b)
+notes: 'Fast gpt-image-2.5 variant. Needs OpenAI Org Verification [?]. Price NOT found in the research: the estimator reports
+  an unknown price (confirmation required).'
+modes:
+- t2i
+- edit
+params:
+- key: prompt
+  label: Prompt
+  type: text
+  group: prompt
+  level: basic
+  providerPath: prompt
+  description: Prompt text. Also accepted as top-level `prompt` of the request.
+- key: size
+  label: Size (WxH)
+  type: text
+  default: 1024x1024
+  group: size
+  level: basic
+  providerPath: size
+  suggestions:
+  - auto
+  - 1024x1024
+  - 1536x1024
+  - 1024x1536
+  - 2048x2048
+  - 2048x1152
+  - 3840x2160
+  - 2160x3840
+  sizeRule:
+    allow:
+    - auto
+    multipleOf: 16
+    maxEdge: 3840
+    maxRatio: 3
+    minPixels: 655360
+    maxPixels: 8294400
+  description: '`auto` or WxH: both edges multiples of 16, longest edge <= 3840, ratio <= 3:1, 655,360 to 8,294,400 pixels.
+    Above 2560x1440 is experimental. `auto` makes the price unknown.'
+- key: quality
+  label: Quality
+  type: enum
+  values:
+  - low
+  - medium
+  - high
+  - xhigh
+  - max
+  - auto
+  default: medium
+  group: output
+  level: basic
+  providerPath: quality
+  description: '[?] xhigh/max exist on 2.5 per the research; prices for them are unknown. `auto` = unknown price.'
+- key: output_format
+  label: Output format
+  type: enum
+  values:
+  - png
+  - jpeg
+  - webp
+  default: png
+  group: output
+  level: advanced
+  providerPath: output_format
+- key: output_compression
+  label: Compression (jpeg/webp)
+  type: int
+  range:
+    min: 0
+    max: 100
+  group: output
+  level: advanced
+  providerPath: output_compression
+  description: 0-100, only sent for jpeg/webp (dropped for png).
+- key: background
+  label: Background
+  type: enum
+  values:
+  - auto
+  - opaque
+  - transparent
+  default: auto
+  group: style
+  level: advanced
+  providerPath: background
+  description: '[?] transparent needs png or webp (treated as supported on 2.5; gpt-image-2 support unclear).'
+- key: moderation
+  label: Moderation
+  type: enum
+  values:
+  - auto
+  - low
+  default: auto
+  group: safety
+  level: advanced
+  providerPath: moderation
+- key: reference_images
+  label: Reference images
+  type: imageList
+  group: reference
+  level: basic
+  appliesToModes:
+  - edit
+  required: true
+  maxItems: 16
+  description: '[?] Up to 16 PNG/WEBP/JPEG, <25 MB each (limit from the older gpt-image spec; recheck for 2.5). Sent as multipart
+    `image[]` to /v1/images/edits. No mask in V1.'
+constraints:
+- when:
+    background: transparent
+  then:
+    output_format:
+    - png
+    - webp
+  reason: Transparent background needs png or webp output
+pricing:
+  unit: per_image
+  table: []
+limits:
+  maxConcurrent: 5
+  maxVariantsNative: 1
+  concurrencyGroup: openai
+enhancer:
+  systemPrompt: 'You are a prompt editor for an image generation model. Rewrite the user''s prompt to be vivid and concrete:
+    subject, setting, composition, lighting, style, lens/medium, and any text that must appear in the image. Keep the user''s
+    intent and language. Do not add people, brands or characters the user did not mention. Return only the rewritten prompt,
+    no preface.'
