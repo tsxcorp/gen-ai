@@ -1,5 +1,21 @@
 # Triển khai server B
 
+## Dokploy quản lý deployment
+- Project **AI Gen Studio** (`PPiakl7yyTiJjL7NdZHnk`), environment **production** (`3pQpoeraXVUbA4b58vGX2`), Compose service **Studio** (`6Gm9A8X1kP02dNhxoZ3CJ`), appName `ai-gen-studio-vt4wxi`.
+- Source: GitHub App hiện hữu của Dokploy (`githubId: 7UDc0MUPSBCpFxglxILdc`) đã xác nhận truy cập được `tsxcorp/gen-ai`, branch `main`; compose path `./compose.dokploy.yml`, Dockerfile root build cả UI/API.
+- Domain records trong Dokploy: `gen-ai.nexpo.vn`, `api-genai.nexpo.vn`, HTTPS Let's Encrypt, service `app`, port `8000`, path `/`. Frontend vẫn gọi `/api` cùng origin.
+- Environment Dokploy giữ nguyên `AIGEN_TOKEN` từ deployment cũ; không đưa secret vào Git. Compose mới bắt buộc token không rỗng. External volumes giữ nguyên `genai_genai-data`, `genai_genai-output`; tắt randomize/isolated deployment/isolated volumes.
+- Auto Deploy hiện tắt để tránh restart job trả phí khi push; sau khi kiểm không còn job active, bấm **Deploy** trong Studio để cập nhật từ GitHub App. Không clone bằng token GitHub cá nhân hoặc chỉnh checkout managed bằng tay.
+- Preflight trước migration: event snapshot không có job queued/running; backup data/output vào `/opt/gen-ai/backups/pre-dokploy-*.tar.gz`, quyền hạn chế, không xuất secret.
+- Cutover hoàn tất: Dokploy deployment `xmeloGcS7DZTHe9Wyh6dC` trạng thái `done`, clone/build GitHub App tại commit `b55c75fe09ea684cf230d552c930f4ae7964e757`. Container `ai-gen-studio-vt4wxi-app-1` healthy; `genai-app-1` cũ ở trạng thái exited để rollback, không chạy trùng.
+- Kiểm runtime mới: HTTPS hai domain và frontend PASS; không-token 401, có-token manifests/providers/session PASS; giữ nguyên token, mount đúng hai external volumes, non-root, quyền ghi volume, không host port, tài nguyên 2 GiB/2 CPU/256 PID và log không lộ token đều PASS. Health xác nhận thêm từ máy local.
+- Thư mục managed source `/etc/dokploy/compose/ai-gen-studio-vt4wxi` quyền `700`; file `code/.env` quyền `600`. Dokploy sinh lại env khi deploy: giữ thư mục cha hạn chế và kiểm quyền file sau redeploy; không chia sẻ raw logs/config.
+- Lần cutover đầu rollback an toàn do SSH tunnel API hết hạn trước khi queue deploy; mở tunnel mới rồi deploy thành công. Không bypass TLS/approval hoặc dùng credential GitHub cá nhân để clone trên server.
+- Compose trực tiếp ở `/opt/gen-ai` chỉ giữ làm rollback. Không khởi động đồng thời backend cũ và backend managed với cùng output volume; không dùng `down -v` hoặc xóa volume.
+
+## Baseline trước migration / rollback
+Các lệnh Compose trực tiếp trong phần dưới mô tả deployment ban đầu và rollback, không phải luồng cập nhật chính thức sau khi Dokploy đã quản lý.
+
 ## Kiến trúc
 - Server B: Docker Compose project `genai` tại `/opt/gen-ai`, gắn network ngoài `dokploy-network`.
 - Frontend: `https://gen-ai.nexpo.vn`; backend: `https://api-genai.nexpo.vn/api/health`.
